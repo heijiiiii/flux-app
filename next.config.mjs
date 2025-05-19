@@ -1,10 +1,7 @@
-import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
-  experimental: {
-    ppr: true,
-  },
-  serverExternalPackages: ['openai'],
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
   images: {
     remotePatterns: [
       {
