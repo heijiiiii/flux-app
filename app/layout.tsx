@@ -1,7 +1,8 @@
 import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
-import { GeistSans, GeistMono } from 'geist/font';
+import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
+import { GeistProvider, CssBaseline } from '@geist-ui/react';
 
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
@@ -16,16 +17,11 @@ export const viewport = {
   maximumScale: 1, // Disable auto-zoom on mobile Safari
 };
 
-const geist = GeistSans({
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-geist',
-});
-
-const geistMono = GeistMono({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-geist-mono',
+  variable: '--font-inter',
+  preload: true,
 });
 
 const LIGHT_THEME_COLOR = 'hsl(0 0% 100%)';
@@ -61,7 +57,7 @@ export default async function RootLayout({
       // prop is necessary to avoid the React hydration mismatch warning.
       // https://github.com/pacocoursey/next-themes?tab=readme-ov-file#with-app
       suppressHydrationWarning
-      className={`${geist.variable} ${geistMono.variable}`}
+      className={inter.variable}
     >
       <head>
         <script
@@ -77,8 +73,11 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster position="top-center" />
-          <SessionProvider>{children}</SessionProvider>
+          <GeistProvider>
+            <CssBaseline />
+            <Toaster position="top-center" />
+            <SessionProvider>{children}</SessionProvider>
+          </GeistProvider>
         </ThemeProvider>
       </body>
     </html>
