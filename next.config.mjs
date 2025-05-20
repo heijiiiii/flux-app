@@ -14,7 +14,15 @@ const nextConfig = {
       },
     ],
   },
-  transpilePackages: ['bcrypt-ts', 'ai', '@supabase/supabase-js'],
+  transpilePackages: [
+    'bcrypt-ts',
+    'ai',
+    '@supabase/supabase-js',
+    '@vercel/functions',
+    'resumable-stream',
+    'zod',
+    '@vercel/blob',
+  ],
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
