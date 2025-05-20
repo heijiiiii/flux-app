@@ -1,6 +1,6 @@
 import { compare } from 'bcrypt-ts';
-import NextAuth, { type DefaultSession } from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
+import NextAuth, { type DefaultSession, User, Session, JWT } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { createGuestUser, getUser } from '@/lib/db/queries';
 import { authConfig } from './auth.config';
 import { DUMMY_PASSWORD } from '@/lib/constants';
@@ -30,15 +30,11 @@ declare module 'next-auth/jwt' {
   }
 }
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+// 수정된 부분: Next.js 14와 최신 next-auth 버전에 맞게 handlers를 직접 정의
+const authOptions = {
   ...authConfig,
   providers: [
-    Credentials({
+    CredentialsProvider({
       credentials: {},
       async authorize({ email, password }: any) {
         const users = await getUser(email);
@@ -62,7 +58,7 @@ export const {
         return { ...user, type: 'regular' };
       },
     }),
-    Credentials({
+    CredentialsProvider({
       id: 'guest',
       credentials: {},
       async authorize() {
@@ -72,7 +68,7 @@ export const {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
         token.id = user.id as string;
         token.type = user.type;
@@ -80,7 +76,7 @@ export const {
 
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = token.id;
         session.user.type = token.type;
@@ -89,4 +85,16 @@ export const {
       return session;
     },
   },
-});
+};
+
+// Next.js 14 및 최신 next-auth 버전에 맞게 구성
+const handler = NextAuth(authOptions);
+
+// 각 함수를 개별적으로 내보내기
+export const auth = handler.auth;
+export const signIn = handler.signIn;
+export const signOut = handler.signOut;
+
+// GET, POST 핸들러 정의
+export const GET = handler;
+export const POST = handler;
