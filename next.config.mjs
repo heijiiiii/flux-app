@@ -14,7 +14,7 @@ const nextConfig = {
       },
     ],
   },
-  transpilePackages: [],
+  transpilePackages: ['bcrypt-ts', 'ai', '@supabase/supabase-js'],
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
