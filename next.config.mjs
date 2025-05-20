@@ -14,7 +14,7 @@ const nextConfig = {
       },
     ],
   },
-  transpilePackages: ['@geist-ui/react'],
+  transpilePackages: [],
   webpack: (config) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
