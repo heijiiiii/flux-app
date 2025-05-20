@@ -23,11 +23,19 @@ const nextConfig = {
     'zod',
     '@vercel/blob',
   ],
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
     };
+
+    config.module.rules.push({
+      test: /\.m?js/,
+      resolve: {
+        fullySpecified: false,
+      },
+    });
+
     return config;
   },
   eslint: {
@@ -37,6 +45,9 @@ const nextConfig = {
   typescript: {
     // 타입 오류가 있어도 빌드 진행
     ignoreBuildErrors: true,
+  },
+  experimental: {
+    esmExternals: 'loose',
   },
 };
 
