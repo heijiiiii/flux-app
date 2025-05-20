@@ -29,6 +29,7 @@
     "@radix-ui/react-tooltip": "^1.2.6",
     "@supabase/supabase-js": "^2.49.5",
     "ai": "^4.3.16",
+    "bcrypt-ts": "^7.0.0",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "codemirror": "^6.0.1",
