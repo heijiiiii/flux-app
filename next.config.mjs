@@ -5,15 +5,22 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: 'avatar.vercel.sh',
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
       },
       {
-        hostname: 'v3.fal.media',
-      },
-      {
-        hostname: 'fal.media',
+        protocol: 'https',
+        hostname: '*.swell.store',
       },
     ],
+  },
+  transpilePackages: ['@geist-ui/react'],
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+    };
+    return config;
   },
   eslint: {
     // 빌드 과정에서 경고를 표시하지만 빌드를 중단하지 않음
