@@ -2,7 +2,6 @@ import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
-import { GeistProvider, CssBaseline } from '@geist-ui/react';
 
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
@@ -73,11 +72,8 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <GeistProvider>
-            <CssBaseline />
-            <Toaster position="top-center" />
-            <SessionProvider>{children}</SessionProvider>
-          </GeistProvider>
+          <Toaster position="top-center" />
+          <SessionProvider>{children}</SessionProvider>
         </ThemeProvider>
       </body>
     </html>

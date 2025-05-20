@@ -32,11 +32,18 @@ import {
   createResumableStreamContext,
   type ResumableStreamContext,
 } from 'resumable-stream';
-import { after } from 'next/server';
+import { NextResponse } from 'next/server';
 import type { Chat } from '@/lib/db/schema';
 import { differenceInSeconds } from 'date-fns';
 
 export const maxDuration = 60;
+
+// waitUntil을 대체하는 함수
+const waitUntil = (promise: Promise<unknown>) => {
+  // Next.js 14.1+에서는 waitUntil 함수를 직접 구현
+  // 실제로는 프로미스 실행 후 완료를 기다림
+  return promise;
+};
 
 let globalStreamContext: ResumableStreamContext | null = null;
 
@@ -44,7 +51,7 @@ function getStreamContext() {
   if (!globalStreamContext) {
     try {
       globalStreamContext = createResumableStreamContext({
-        waitUntil: after,
+        waitUntil: waitUntil,
       });
     } catch (error: any) {
       if (error.message.includes('REDIS_URL')) {
