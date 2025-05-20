@@ -24,17 +24,19 @@ export async function middleware(request: NextRequest) {
   });
 
   if (!token) {
+    const currentURL = request.nextUrl.clone();
     const redirectUrl = encodeURIComponent(request.url);
+    const guestLoginUrl = new URL('/api/auth/guest', currentURL.origin);
+    guestLoginUrl.searchParams.append('redirectUrl', redirectUrl);
 
-    return NextResponse.redirect(
-      new URL(`/api/auth/guest?redirectUrl=${redirectUrl}`, request.url),
-    );
+    return NextResponse.redirect(guestLoginUrl);
   }
 
   const isGuest = guestRegex.test(token?.email ?? '');
 
   if (token && !isGuest && ['/login', '/register'].includes(pathname)) {
-    return NextResponse.redirect(new URL('/', request.url));
+    const homeUrl = new URL('/', request.nextUrl.origin);
+    return NextResponse.redirect(homeUrl);
   }
 
   return NextResponse.next();

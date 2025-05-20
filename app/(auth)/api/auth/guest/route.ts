@@ -1,21 +1,16 @@
-import { signIn } from '@/app/(auth)/auth';
-import { isDevelopmentEnvironment } from '@/lib/constants';
-import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const redirectUrl = searchParams.get('redirectUrl') || '/';
 
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-    secureCookie: !isDevelopmentEnvironment,
-  });
+  // NextAuth 게스트 로그인 라우트로 리디렉션
+  const callbackUrl = encodeURIComponent(redirectUrl);
 
-  if (token) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+  // 현재 URL 기반으로 리디렉션 URL 생성
+  const reqUrl = new URL(request.url);
+  const signinUrl = new URL('/api/auth/signin/guest', reqUrl.origin);
+  signinUrl.searchParams.append('callbackUrl', callbackUrl);
 
-  return signIn('guest', { redirect: true, redirectTo: redirectUrl });
+  return NextResponse.redirect(signinUrl);
 }

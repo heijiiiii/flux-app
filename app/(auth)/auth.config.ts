@@ -1,4 +1,4 @@
-import type { NextAuthConfig } from 'next-auth';
+import { isDevelopmentEnvironment } from '@/lib/constants';
 
 export const authConfig = {
   pages: {
@@ -10,4 +10,18 @@ export const authConfig = {
     // while this file is also used in non-Node.js environments
   ],
   callbacks: {},
-} satisfies NextAuthConfig;
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: !isDevelopmentEnvironment,
+      },
+    },
+  },
+  secret:
+    process.env.AUTH_SECRET || 'default-dev-secret-at-least-32-characters',
+  debug: isDevelopmentEnvironment,
+};

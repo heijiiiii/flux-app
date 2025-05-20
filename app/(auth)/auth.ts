@@ -3,7 +3,7 @@ import NextAuth, { type DefaultSession } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { createGuestUser, getUser } from '@/lib/db/queries';
 import { authConfig as baseAuthConfig } from './auth.config';
-import { DUMMY_PASSWORD } from '@/lib/constants';
+import { DUMMY_PASSWORD, isDevelopmentEnvironment } from '@/lib/constants';
 import type { DefaultJWT } from 'next-auth/jwt';
 
 export type UserType = 'guest' | 'regular';
@@ -67,6 +67,22 @@ const authOptions = {
       },
     }),
   ],
+  secret: process.env.AUTH_SECRET || 'default-secret-for-dev-min-32-chars-long',
+  session: {
+    strategy: 'jwt' as const,
+    maxAge: 30 * 24 * 60 * 60, // 30일
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax' as const,
+        path: '/',
+        secure: !isDevelopmentEnvironment,
+      },
+    },
+  },
   callbacks: {
     async jwt({ token, user }: any) {
       if (user) {
@@ -87,9 +103,9 @@ const authOptions = {
   },
 };
 
-// Next.js 14 호환 방식으로 내보내기
-export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
+// NextAuth 라우트 핸들러 생성
+const handler = NextAuth(authOptions);
 
-// 라우트 핸들러로 내보내기
-export const GET = handlers.GET;
-export const POST = handlers.POST;
+// API 라우트 핸들러로 내보내기
+export const GET = handler;
+export const POST = handler;
