@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { fal } from '@fal-ai/client';
 
 // Fal.ai API 설정 - 환경 변수 이름을 여러 옵션으로 체크
-const FAL_KEY = process.env.FAL_KEY || process.env.FAL_AI_API_KEY;
+const FAL_KEY = process.env.FAL_AI_API_KEY || process.env.FAL_KEY;
+const FAL_MODEL_ID =
+  process.env.FAL_AI_MODEL_ID || 'fal-ai/flux-pro/v1.1-ultra';
 
 // Fal.ai 클라이언트 초기화
 if (FAL_KEY) {
@@ -15,6 +17,7 @@ if (FAL_KEY) {
 console.log('환경 변수 확인:', {
   FAL_KEY_EXISTS: !!FAL_KEY,
   FAL_KEY_PREFIX: FAL_KEY ? `${FAL_KEY.substring(0, 5)}...` : 'not set',
+  FAL_MODEL_ID: FAL_MODEL_ID,
 });
 
 export async function POST(req: Request) {
@@ -40,7 +43,7 @@ export async function POST(req: Request) {
     }
 
     console.log('이미지 생성 시작:', {
-      model: 'fal-ai/flux-pro/v1.1-ultra',
+      model: FAL_MODEL_ID,
       prompt: prompt.substring(0, 50) + '...',
       style,
       aspect_ratio,
@@ -51,9 +54,9 @@ export async function POST(req: Request) {
     const enhancedPrompt =
       style !== 'Hyper-realism' ? `${prompt} (Style: ${style})` : prompt;
 
-    // Fal.ai API 호출 - 업그레이드된 Flux Pro 모델 사용
+    // Fal.ai API 호출 - 모델 ID를 환경변수에서 가져옴
     // Ultra 모델에서 최고의 화질을 얻기 위한 설정 최적화
-    const result = await fal.subscribe('fal-ai/flux-pro/v1.1-ultra', {
+    const result = await fal.subscribe(FAL_MODEL_ID, {
       input: {
         prompt: enhancedPrompt,
         seed: Math.floor(Math.random() * 10000000), // 랜덤 시드 값
